@@ -1,25 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
+import React,{useEffect,useState} from 'react';
 import './App.css';
+import {breakPoints} from './device-breakpoints'
+import DeviceInfo from './DeviceInfo'
+import {fetchUser} from './Network/ApiCallsHandler'
+import {isEmpty} from 'lodash'
+import { UserContext } from './contexts/userContexts';
 
 function App() {
+  const fetchAuth = async () => {
+    const user = await fetchUser();
+    const logged_in = !isEmpty(user) ?user:false;
+    setLogin(logged_in)
+  }
+  const [logged_in,setLogin] = useState(false);
+  useEffect(() => {
+    fetchAuth()
+    return () => {
+    }
+  }, [])
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <UserContext.Provider value = {logged_in}>
+      <DeviceInfo breakPoints = {breakPoints} logged_in = {logged_in}/>
+    </UserContext.Provider>
   );
 }
 
